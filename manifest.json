@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "name": "Kita Metronome",
+  "version": "1.0.0",
+  "description": "A metronome player for youtube guitar tab videos",
+  "icons": {
+    "16": "images/kita16.png",
+    "48": "images/kita48.png",
+    "128": "images/kita128.png"
+  },
+  "content_scripts": [
+    {
+        "js": [
+            "content.js"
+        ],
+        "matches": [
+            "https://www.youtube.com/watch?*"
+        ]
+    }
+  ],
+  "action": {
+    "default_icon": {
+        "16": "images/kita16.png",
+        "48": "images/kita48.png",
+        "128": "images/kita128.png"
+    },
+    "default_title": "metronome for guitar tab videos",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ]
+}
