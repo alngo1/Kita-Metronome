@@ -14,7 +14,7 @@
             "content.js"
         ],
         "matches": [
-            "https://www.youtube.com/watch?*"
+            "https://www.youtube.com/*"
         ]
     }
   ],
@@ -29,6 +29,11 @@
   },
   "permissions": [
     "activeTab",
-    "scripting"
-  ]
+    "scripting",
+    "offscreen"
+  ],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "minimum_chrome_version": "118"
 }

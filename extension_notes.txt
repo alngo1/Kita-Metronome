@@ -1,0 +1,39 @@
+manifest:
+    - the core of all chrome extensions
+    - register service workers, content scripts, and the like
+
+content scripts:
+    - can add css or js injected to website based on url match pattern
+
+service workers:
+    - runs in the background of a page, and auto terminates to save storage
+    - terminates every 30s or if no events
+    - any event will revive the worker and keep it alive
+
+offscreen documents:
+    - allows a service worker to access the dom
+    - content scripts aren't allowed to play audio, but with offscreen doc we can get around this
+    - only able to see chrome.runtime events
+
+action:
+    - the little button near the omnibox
+    - can open up the popup
+
+popup:
+    - essentially its own html page that can open when action is clicked
+
+typescript:
+    - recognize chrome namespace by: npm i @types/chrome
+    - ctrl+shift+b > tsc watch to auto update .ts files
+    - tsc --version to check version
+    - tsc "[filename]" to compile .ts to .js
+    
+future extension considerations:
+    - could use service worker chrome.webNavigation.onHistoryStateUpdated and chrome.runtime.onMessage
+    - the yt-navigate finish event is fired by youtube, theres no docs just input getElementEvents(document) into devtool console to find
+    - events have some good stuff like: "type" the acutal event, "target" the element
+
+
+async/await:
+    - async just notes a function that has a promise in it
+    - await only used in an async function, and pauses all execution till a promise resolves
