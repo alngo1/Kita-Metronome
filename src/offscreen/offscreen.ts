@@ -14,7 +14,7 @@ function handleMessages(message: any): void{
 
 //creates metronome audio element and adds to document
 function createMetronome(options: {volume: number, desiredBPM: number}) : void {
-    let metAudio : HTMLAudioElement = new Audio("audio/tam 4-4time 120bpm 1min.mp3");
+    let metAudio : HTMLAudioElement = new Audio("../../audio/tam 4-4time 120bpm 1min.mp3");
     metAudio.setAttribute("id", "metAudio");
     metAudio.loop = true;
 

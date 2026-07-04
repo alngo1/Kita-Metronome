@@ -1,4 +1,5 @@
 //chrome dev doc code to ensure offscreen document exists
+
 let creating: Promise<void> | null; // A global promise to avoid concurrency issues
 async function setupOffscreenDocument(path: string): Promise<void> {
     // Check all windows controlled by the service worker to see if one
@@ -31,7 +32,7 @@ async function setupOffscreenDocument(path: string): Promise<void> {
 //handles contentscript sending message to create the offscreen audio
 function handleSWMsg(message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) {
     if (message.target !== 'sw-create-offscreen-audio') return;
-    setupOffscreenDocument("offscreen.html"); //ensure offscreen exists
+    setupOffscreenDocument("../offscreen/offscreen.html"); //ensure offscreen exists
     sendResponse({statusCode: 200});
 }
 //add handleSWMsg to listeners

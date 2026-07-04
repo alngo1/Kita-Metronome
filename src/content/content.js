@@ -6,7 +6,6 @@
 //  calculates metronome length > press space > start video and metronome
 //ensure playback rate of video
 //edit bpm of metronome and any necessary offset in popup
-//refresh page after modification in chrome extension
 let video = null;
 let videoPrepped = false;
 let audioPrepped = false;
@@ -26,6 +25,7 @@ function prepareVideo() {
     const options = { once: true };
     video = document.querySelector(".html5-main-video");
     video.addEventListener("canplaythrough", (event) => {
+        console.log("hello???");
         if (video) {
             video.pause();
             videoPrepped = true;

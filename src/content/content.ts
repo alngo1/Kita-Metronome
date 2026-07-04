@@ -2,13 +2,11 @@
 //  could also edit the seek time with video.currentTime property (also in secs)
 //  use setTimeout() or service worker alarm for set some timer to continue play of metronome
 
+
+//HOW EXTENSION WORKS:
 //  (assuming ext is on) click video > pauses/preps video > 
 //  msg service worker to ensure offscreen > offscreen returns response audio prepped
 //  calculates metronome length > press space > start video and metronome
-
-//ensure playback rate of video
-//edit bpm of metronome and any necessary offset in popup
-//refresh page after modification in chrome extension
 
 let video: HTMLVideoElement | null = null;
 let videoPrepped: boolean = false;
@@ -28,6 +26,7 @@ function resetVideo() : void {
 
 //select video elem, then add a listener to pause once ready and 
 //set video duration
+//omg only works when link for youtube website changes
 function prepareVideo(): void {
     const options = {once: true};
     video = document.querySelector(".html5-main-video")!;

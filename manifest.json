@@ -11,7 +11,7 @@
   "content_scripts": [
     {
         "js": [
-            "content.js"
+            "src/content/content.js"
         ],
         "matches": [
             "https://www.youtube.com/*"
@@ -25,7 +25,7 @@
         "128": "images/kita128.png"
     },
     "default_title": "metronome for guitar tab videos",
-    "default_popup": "popup.html"
+    "default_popup": "src/action/popup.html"
   },
   "permissions": [
     "activeTab",
@@ -33,7 +33,7 @@
     "offscreen"
   ],
   "background": {
-    "service_worker": "service-worker.js"
+    "service_worker": "src/service-worker/service-worker.js"
   },
   "minimum_chrome_version": "118"
 }
