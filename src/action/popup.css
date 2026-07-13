@@ -1,0 +1,23 @@
+*{
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    width: 100%;
+}
+
+button{
+    cursor: pointer;
+}
+
+.bpm-container, .offset-container{
+    display: flex;
+    align-items: center;
+}
+
+.video-speed-buttons-container{
+    list-style: none;
+    display: flex;
+    text-indent: none;
+}

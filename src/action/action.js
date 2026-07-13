@@ -32,3 +32,28 @@ function handleClick(){
         audio.pause();
     }
 };
+
+const bpmValue = document.querySelector("#bpmValue");
+const bpmInput = document.querySelector("#BPM");
+bpmValue.textContent = bpmInput.value;
+bpmInput.addEventListener("input", (event) => {
+  bpmValue.textContent = event.target.value;
+});
+
+
+const offsetValue = document.querySelector("#offsetValue");
+const offsetInput = document.querySelector("#offset");
+offsetValue.textContent = offsetInput.value;
+offsetInput.addEventListener("input", (event) => {
+  offsetValue.textContent = event.target.value;
+});
+
+function addToBPMValue(val){
+    const bpmValue = document.querySelector("#bpmValue");
+    bpmValue.value += val;
+}
+
+function addToOffsetValue(val){
+    const offsetValue = document.querySelector("#offsetValue");
+    offsetValue.value += val;
+}

@@ -4,20 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="popup.css">
 </head>
 <body>
     <h3>Manual Toggle</h3>
     <button id="metronomeBtn">Start Metronome</button>
 
     <h3>Edit Audio Speed</h3>
-    <input type="range" id="BPM" name="BPM" min="0" max="240" />
-    <label for="BPM">BPM</label>
+    <div class="bpm-container">
+        <button id="sub10BPM">+10</button>
+        <button id="sub1BPM">+1</button>
+        <input type="range" id="BPM" name="BPM" min="0" max="240" step="1" />
+        <label for="BPM">BPM</label>
+        <button id="add1BPM">+1</button>
+        <button id="add10BPM">+10</button>
+    </div>
+    <p>Value: <output id="bpmValue"></output></p>
     
-    <input type="range" id="offset" name="offset" min="0" max="240" />
-    <label for="offset">offset</label>
+    <div class="offset-container">
+        <button id="add1Offset">+1</button>
+        <button id="add10Offset">+10</button>
+        <input type="range" id="offset" name="offset" min="0" max="240" />
+        <label for="offset">offset</label>
+        <button id="add1Offset">+1</button>
+        <button id="add10Offset">+10</button>
+    </div>
+    <p>Value: <output id="offsetValue"></output></p>
 
     <h3>Edit Video Speed</h3>
-    <ul>
+    <ul class="video-speed-buttons-container">
         <li>
             <button>0.25</button>
         </li>
@@ -46,5 +61,6 @@
 
     <audio id="metAudio" src="../../audio/tam 4-4time 120bpm 1min.mp3"  loop></audio>
     <script src="./action.js"></script>
+    <script src="addOnClick.js"></script>
 </body>
 </html>
