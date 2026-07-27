@@ -9,6 +9,7 @@
 <body>
     <h3>Manual Toggle</h3>
     <button id="metronomeBtn">Start Metronome</button>
+    <audio id="metAudio" src="../../audio/tam 4-4time 120bpm 1min.mp3"  loop></audio>
 
     <h3>Edit Audio Speed</h3>
     <div class="bpm-container">
@@ -59,8 +60,13 @@
         </li>
     </ul>
 
-    <audio id="metAudio" src="../../audio/tam 4-4time 120bpm 1min.mp3"  loop></audio>
+
+    <button id="newMet">play new met</button>
+    <audio id="beat" src="../../audio/beat(old).mp3"></audio>
+    <audio id="downbeat" src="../../audio/downbeat.mp3"></audio>
+
     <script src="./action.js"></script>
-    <script src="addOnClick.js"></script>
+    <script src="./addOnClick.js"></script>
+    <script src="./metronome.js"></script>
 </body>
 </html>
