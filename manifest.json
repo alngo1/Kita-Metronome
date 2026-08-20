@@ -30,7 +30,8 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "offscreen"
+    "offscreen",
+    "storage"
   ],
   "background": {
     "service_worker": "src/service-worker/service-worker.js"

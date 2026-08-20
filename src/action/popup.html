@@ -7,30 +7,25 @@
     <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-    <h3>Manual Toggle</h3>
-    <button id="metronomeBtn">Start Metronome</button>
-    <audio id="metAudio" src="../../audio/tam 4-4time 120bpm 1min.mp3"  loop></audio>
-
     <h3>Edit Audio Speed</h3>
     <div class="bpm-container">
-        <button id="sub10BPM">+10</button>
-        <button id="sub1BPM">+1</button>
-        <input type="range" id="BPM" name="BPM" min="0" max="240" step="1" />
         <label for="BPM">BPM</label>
-        <button id="add1BPM">+1</button>
-        <button id="add10BPM">+10</button>
+        <input type="number" id="BPM" name="BPM" min="0" max="240" step="1" placeholder="60" value="60"/>
     </div>
-    <p>Value: <output id="bpmValue"></output></p>
+    <p>Value: <output id="bpmValue"></output> bpm</p>
     
     <div class="offset-container">
-        <button id="add1Offset">+1</button>
-        <button id="add10Offset">+10</button>
-        <input type="range" id="offset" name="offset" min="0" max="240" />
-        <label for="offset">offset</label>
-        <button id="add1Offset">+1</button>
-        <button id="add10Offset">+10</button>
+        <label for="offset">Offset</label>
+        <input type="number" id="offset" name="offset" min="0" max="10000" step="250" placeholder="0" value="0"/>
     </div>
-    <p>Value: <output id="offsetValue"></output></p>
+    <p>Value: <output id="offsetValue"></output> ms</p>
+
+    <h3>Edit Audio Downbeats</h3>
+    <label for="enableDownBeats">Enable Downbeats</label>
+    <input type="checkbox" name="enableDownBeat" id="enableDownBeat">
+    <label for="beatsInBar">Beats In Bar</label>
+    <input type="number" name="beatsInBar" id="beatsInBar" value="4" min="1" max="4" step="1">
+
 
     <h3>Edit Video Speed</h3>
     <ul class="video-speed-buttons-container">
@@ -61,12 +56,17 @@
     </ul>
 
 
-    <button id="newMet">play new met</button>
+    <button id="newMet">Play Metronome</button>
+
+    <h3>Play Premade Audio Track</h3>
+    <button id="metronomeBtn">Start Metronome</button>
+    <audio id="metAudio" src="../../audio/tam 4-4time 120bpm 1min.mp3"  loop></audio>
+
+
     <audio id="beat" src="../../audio/beat(old).mp3"></audio>
     <audio id="downbeat" src="../../audio/downbeat.mp3"></audio>
 
     <script src="./action.js"></script>
-    <script src="./addOnClick.js"></script>
     <script src="./metronome.js"></script>
 </body>
 </html>
