@@ -4,11 +4,21 @@ function handleMessages(message: any): void{
         return;
     }
 
-    let metAudio: HTMLAudioElement = document.querySelector("#metAudio")!;
     if(message.value == "play-metro"){
+        let metAudio: HTMLAudioElement = document.querySelector("#metAudio")!;
         metAudio.play();
     } else if(message.value == "pause-metro") {
+        let metAudio: HTMLAudioElement = document.querySelector("#metAudio")!;
         metAudio.pause();
+    }
+}
+
+function getMetStatus(message: any): void{
+    if(message.target !== "offscreen") return;
+
+    if(message.value == "getMetStatus"){
+        let metAudio: HTMLAudioElement = document.querySelector("#metAudio")!;
+        chrome.runtime.sendMessage({target: "content", value: metAudio.paused});
     }
 }
 
@@ -33,3 +43,5 @@ createMetronome(audioElemOptions);
 
 //add listener for "play-metro" and "pause-metro"
 chrome.runtime.onMessage.addListener(handleMessages);
+
+chrome.runtime.onMessage.addListener(getMetStatus);

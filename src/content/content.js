@@ -1,4 +1,3 @@
-"use strict";
 //TODO:
 //  could also edit the seek time with video.currentTime property (also in secs)
 //  use setTimeout() or service worker alarm for set some timer to continue play of metronome
@@ -13,23 +12,14 @@ let videoPrepped = false;
 let audioPrepped = false;
 //var for lenght of video in ms?
 let videoDuration = 0;
-//if video already exists then page has changed and
-//need to remove "canplaythrough" event listener and once removed reset videoPrepped flag
-function resetVideo() {
-    if (video) {
-        video.removeEventListener("canplaythrough", () => {
-            videoPrepped = false;
-        });
-    }
-}
 //select video elem, then add a listener to pause once ready and 
 //set video duration
 //omg only works when link for youtube website changes not refreshes
 function prepareVideo() {
-    if (videoPrepped == true)
+    if (videoPrepped)
         return;
-    const options = { once: true };
     video = document.querySelector(".html5-main-video");
+    const options = { once: true };
     video.addEventListener("canplaythrough", (event) => {
         if (video) {
             video.pause();
@@ -38,7 +28,6 @@ function prepareVideo() {
             console.log(videoDuration);
         }
     }, options);
-    console.log(video);
 }
 //send message to SW to create offscreen document to ensure audio is ready
 function prepareOffscreenAudio() {
@@ -47,12 +36,12 @@ function prepareOffscreenAudio() {
     (async () => {
         const res = await chrome.runtime.sendMessage({ value: "sw-create-offscreen-audio", target: "service-worker" });
         if (res == true) {
-            audioPrepped = true;
             console.log("audio prepped!");
+            audioPrepped = true;
         }
         else {
-            audioPrepped = false;
             console.log("failed to create offscreen audio");
+            audioPrepped = false;
         }
     })();
 }
@@ -60,35 +49,33 @@ let enableKita = true;
 //everytime document.body gets mutated query the video element exists/changed
 //if it exists reset existing videos and prepare video and audio to play
 const observer = new MutationObserver((mutations) => {
-    if (document.querySelector(".html5-main-video")) {
-        resetVideo();
-        prepareVideo();
-        prepareOffscreenAudio();
+    if (enableKita && document.querySelector(".html5-main-video")) {
+        if (!videoPrepped) {
+            prepareVideo();
+        }
+        if (!audioPrepped) {
+            prepareOffscreenAudio();
+        }
+    }
+    else if (document.querySelector(".html5-main-video") == null) {
+        videoPrepped = false;
+        audioPrepped = false;
     }
 });
 const config = { childList: true, subtree: true };
 observer.observe(document.body, config);
-// prepareOffscreenAudio();
 //document eventlisteners for spacebar press to start and stop video and metronome
-let playVideoAndMetro = false;
 document.addEventListener("keydown", (event) => {
-    if (event.key == " ") {
-        playVideoAndMetro = !playVideoAndMetro;
+    console.log(videoPrepped, Boolean(video), audioPrepped);
+    if (videoPrepped && video && audioPrepped) {
+        video.play();
+        chrome.runtime.sendMessage({ value: "play-metro", target: "offscreen" });
+        console.log("playing");
     }
-    console.log("key pressed ", event.key);
-    if (playVideoAndMetro) {
-        if (videoPrepped && video && audioPrepped) {
-            video.play();
-            chrome.runtime.sendMessage({ value: "play-metro", target: "offscreen" });
-            console.log("playing");
-        }
-    }
-    else {
-        if (videoPrepped && video && audioPrepped) {
-            video.pause();
-            chrome.runtime.sendMessage({ value: "pause-metro", target: "offscreen" });
-            console.log("paused");
-        }
+    else if (!video || (video && video.paused == false)) { //if already playing or lost connection to video need to pause video
+        video === null || video === void 0 ? void 0 : video.pause();
+        chrome.runtime.sendMessage({ value: "pause-metro", target: "offscreen" });
+        console.log("paused");
     }
 });
 //# sourceMappingURL=content.js.map

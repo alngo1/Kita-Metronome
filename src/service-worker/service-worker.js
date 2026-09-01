@@ -1,4 +1,3 @@
-"use strict";
 //chrome dev doc code to ensure offscreen document exists
 let creating; // A global promise to avoid concurrency issues
 async function setupOffscreenDocument(path) {

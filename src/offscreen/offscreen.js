@@ -1,15 +1,23 @@
-"use strict";
 //handles messages: "play-metro" and "pause-metro"
 function handleMessages(message) {
     if (message.target !== "offscreen") {
         return;
     }
-    let metAudio = document.querySelector("#metAudio");
     if (message.value == "play-metro") {
+        let metAudio = document.querySelector("#metAudio");
         metAudio.play();
     }
     else if (message.value == "pause-metro") {
+        let metAudio = document.querySelector("#metAudio");
         metAudio.pause();
+    }
+}
+function getMetStatus(message) {
+    if (message.target !== "offscreen")
+        return;
+    if (message.value == "getMetStatus") {
+        let metAudio = document.querySelector("#metAudio");
+        chrome.runtime.sendMessage({ target: "content", value: metAudio.paused });
     }
 }
 //creates metronome audio element and adds to document
@@ -29,4 +37,5 @@ let audioElemOptions = { volume: 1.0, desiredBPM: 60.0 };
 createMetronome(audioElemOptions);
 //add listener for "play-metro" and "pause-metro"
 chrome.runtime.onMessage.addListener(handleMessages);
+chrome.runtime.onMessage.addListener(getMetStatus);
 //# sourceMappingURL=offscreen.js.map
