@@ -31,6 +31,13 @@ class Metronome{
         this.nextBeat = 1;
     }
 
+    setBPM(newBPM){
+        this.bpm = newBPM;
+        this.beatDelay = this.bpmToMS(newBPM);
+        this.downBeatDelay = this.beatDelay / this.beatsInBar;
+        met.resetTimers();
+    }
+
     sleep(ms){
         return new Promise(res => setTimeout(res, ms));
     }
@@ -193,7 +200,7 @@ async function bpmValueChanged(event){
     if(met.playing){
         await met.pauseMetronome();
     }
-    met = new Metronome(event.target.value);
+    met.setBPM(event.target.value);
 }
 bpmInput.addEventListener("input", bpmValueChanged);
 

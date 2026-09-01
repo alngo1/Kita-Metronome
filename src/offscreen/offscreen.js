@@ -1,13 +1,14 @@
+"use strict";
 //handles messages: "play-metro" and "pause-metro"
 function handleMessages(message) {
-    if (message.target !== "play-metro" && message.target !== "pause-metro") {
+    if (message.target !== "offscreen") {
         return;
     }
     let metAudio = document.querySelector("#metAudio");
-    if (message.target == "play-metro") {
+    if (message.value == "play-metro") {
         metAudio.play();
     }
-    else if (message.target == "pause-metro") {
+    else if (message.value == "pause-metro") {
         metAudio.pause();
     }
 }
@@ -24,7 +25,7 @@ function createMetronome(options) {
     document.body.appendChild(metAudio);
 }
 //create and add audio element in document
-let audioElemOptions = { volume: 0.4, desiredBPM: 60.0 };
+let audioElemOptions = { volume: 1.0, desiredBPM: 60.0 };
 createMetronome(audioElemOptions);
 //add listener for "play-metro" and "pause-metro"
 chrome.runtime.onMessage.addListener(handleMessages);

@@ -9,11 +9,11 @@ async function setupOffscreenDocument(path: string): Promise<void> {
         contextTypes: ['OFFSCREEN_DOCUMENT'],
         documentUrls: [offscreenUrl]
     });
-
+    
     if (existingContexts.length > 0) {
         return;
     }
-
+    
     // create offscreen document
     if (creating) {
         await creating;
@@ -21,9 +21,10 @@ async function setupOffscreenDocument(path: string): Promise<void> {
         creating = chrome.offscreen.createDocument({
             url: path,
             //audio playback offscreen lifetime is 30s
-            reasons: ['AUDIO_PLAYBACK'],
+            reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK],
             justification: 'Used to play metronome sounds',
-        });
+        })
+        .catch(e=>console.log(e));
         await creating;
         creating = null;
     }
@@ -31,9 +32,20 @@ async function setupOffscreenDocument(path: string): Promise<void> {
 
 //handles contentscript sending message to create the offscreen audio
 function handleSWMsg(message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void) {
-    if (message.target !== 'sw-create-offscreen-audio') return;
-    setupOffscreenDocument("../offscreen/offscreen.html"); //ensure offscreen exists
+    if (message.target !== "service-worker") return;
+    //ensure offscreen exists
+    (async () => {
+        await setupOffscreenDocument("src/offscreen/offscreen.html")
+    })()
+    .catch(e=>console.log(e));
     sendResponse({statusCode: 200});
 }
 //add handleSWMsg to listeners
-chrome.runtime.onMessage.addListener(handleSWMsg);
+chrome.runtime.onMessage.addListener(async () => {
+    try {
+        await setupOffscreenDocument("src/offscreen/offscreen.html");
+    } catch (error) {
+        console.log(error);
+    }
+    return true;
+});

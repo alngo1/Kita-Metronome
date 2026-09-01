@@ -1,3 +1,4 @@
+"use strict";
 //TODO:
 //  could also edit the seek time with video.currentTime property (also in secs)
 //  use setTimeout() or service worker alarm for set some timer to continue play of metronome
@@ -5,12 +6,15 @@
 //  (assuming ext is on) click video > pauses/preps video > 
 //  msg service worker to ensure offscreen > offscreen returns response audio prepped
 //  calculates metronome length > press space > start video and metronome
+//var for youtube video element
 let video = null;
+//vars for whether video and metronome audio are prepped before playing
 let videoPrepped = false;
 let audioPrepped = false;
+//var for lenght of video in ms?
 let videoDuration = 0;
-//if video already exists then page has changed and i'll 
-//need to remove event listener and once removed reset videoPrepped flag
+//if video already exists then page has changed and
+//need to remove "canplaythrough" event listener and once removed reset videoPrepped flag
 function resetVideo() {
     if (video) {
         video.removeEventListener("canplaythrough", () => {
@@ -20,8 +24,10 @@ function resetVideo() {
 }
 //select video elem, then add a listener to pause once ready and 
 //set video duration
-//omg only works when link for youtube website changes
+//omg only works when link for youtube website changes not refreshes
 function prepareVideo() {
+    if (videoPrepped == true)
+        return;
     const options = { once: true };
     video = document.querySelector(".html5-main-video");
     video.addEventListener("canplaythrough", (event) => {
@@ -32,11 +38,15 @@ function prepareVideo() {
             console.log(videoDuration);
         }
     }, options);
+    console.log(video);
 }
 //send message to SW to create offscreen document to ensure audio is ready
 function prepareOffscreenAudio() {
-    chrome.runtime.sendMessage({ target: "sw-create-offscreen-audio" }, (response) => {
-        if (response.statusCode == 200) {
+    if (audioPrepped)
+        return;
+    (async () => {
+        const res = await chrome.runtime.sendMessage({ value: "sw-create-offscreen-audio", target: "service-worker" });
+        if (res == true) {
             audioPrepped = true;
             console.log("audio prepped!");
         }
@@ -44,8 +54,9 @@ function prepareOffscreenAudio() {
             audioPrepped = false;
             console.log("failed to create offscreen audio");
         }
-    });
+    })();
 }
+let enableKita = true;
 //everytime document.body gets mutated query the video element exists/changed
 //if it exists reset existing videos and prepare video and audio to play
 const observer = new MutationObserver((mutations) => {
@@ -57,25 +68,25 @@ const observer = new MutationObserver((mutations) => {
 });
 const config = { childList: true, subtree: true };
 observer.observe(document.body, config);
+// prepareOffscreenAudio();
 //document eventlisteners for spacebar press to start and stop video and metronome
 let playVideoAndMetro = false;
 document.addEventListener("keydown", (event) => {
     if (event.key == " ") {
         playVideoAndMetro = !playVideoAndMetro;
     }
-});
-document.addEventListener("keyup", () => {
+    console.log("key pressed ", event.key);
     if (playVideoAndMetro) {
         if (videoPrepped && video && audioPrepped) {
             video.play();
-            chrome.runtime.sendMessage({ target: "play-metro" });
+            chrome.runtime.sendMessage({ value: "play-metro", target: "offscreen" });
             console.log("playing");
         }
     }
     else {
         if (videoPrepped && video && audioPrepped) {
             video.pause();
-            chrome.runtime.sendMessage({ target: "pause-metro" });
+            chrome.runtime.sendMessage({ value: "pause-metro", target: "offscreen" });
             console.log("paused");
         }
     }

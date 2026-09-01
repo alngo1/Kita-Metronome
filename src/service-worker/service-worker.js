@@ -1,49 +1,52 @@
+"use strict";
 //chrome dev doc code to ensure offscreen document exists
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 let creating; // A global promise to avoid concurrency issues
-function setupOffscreenDocument(path) {
-    return __awaiter(this, void 0, void 0, function* () {
-        // Check all windows controlled by the service worker to see if one
-        // of them is the offscreen document with the given path
-        const offscreenUrl = chrome.runtime.getURL(path);
-        const existingContexts = yield chrome.runtime.getContexts({
-            contextTypes: ['OFFSCREEN_DOCUMENT'],
-            documentUrls: [offscreenUrl]
-        });
-        if (existingContexts.length > 0) {
-            return;
-        }
-        // create offscreen document
-        if (creating) {
-            yield creating;
-        }
-        else {
-            creating = chrome.offscreen.createDocument({
-                url: path,
-                //audio playback offscreen lifetime is 30s
-                reasons: ['AUDIO_PLAYBACK'],
-                justification: 'Used to play metronome sounds',
-            });
-            yield creating;
-            creating = null;
-        }
+async function setupOffscreenDocument(path) {
+    // Check all windows controlled by the service worker to see if one
+    // of them is the offscreen document with the given path
+    const offscreenUrl = chrome.runtime.getURL(path);
+    const existingContexts = await chrome.runtime.getContexts({
+        contextTypes: ['OFFSCREEN_DOCUMENT'],
+        documentUrls: [offscreenUrl]
     });
+    if (existingContexts.length > 0) {
+        return;
+    }
+    // create offscreen document
+    if (creating) {
+        await creating;
+    }
+    else {
+        creating = chrome.offscreen.createDocument({
+            url: path,
+            //audio playback offscreen lifetime is 30s
+            reasons: [chrome.offscreen.Reason.AUDIO_PLAYBACK],
+            justification: 'Used to play metronome sounds',
+        })
+            .catch(e => console.log(e));
+        await creating;
+        creating = null;
+    }
 }
 //handles contentscript sending message to create the offscreen audio
 function handleSWMsg(message, sender, sendResponse) {
-    if (message.target !== 'sw-create-offscreen-audio')
+    if (message.target !== "service-worker")
         return;
-    setupOffscreenDocument("../offscreen/offscreen.html"); //ensure offscreen exists
+    //ensure offscreen exists
+    (async () => {
+        await setupOffscreenDocument("src/offscreen/offscreen.html");
+    })()
+        .catch(e => console.log(e));
     sendResponse({ statusCode: 200 });
 }
 //add handleSWMsg to listeners
-chrome.runtime.onMessage.addListener(handleSWMsg);
+chrome.runtime.onMessage.addListener(async () => {
+    try {
+        await setupOffscreenDocument("src/offscreen/offscreen.html");
+    }
+    catch (error) {
+        console.log(error);
+    }
+    return true;
+});
 //# sourceMappingURL=service-worker.js.map
