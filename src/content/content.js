@@ -1,3 +1,4 @@
+"use strict";
 //TODO:
 //  could also edit the seek time with video.currentTime property (also in secs)
 //  use setTimeout() or service worker alarm for set some timer to continue play of metronome
@@ -15,19 +16,35 @@ let videoDuration = 0;
 //select video elem, then add a listener to pause once ready and 
 //set video duration
 //omg only works when link for youtube website changes not refreshes
+function handleCanPlayThrough(event) {
+    if (video) {
+        // video.load();
+        video.pause();
+        videoPrepped = true;
+        videoDuration = video.duration; //duration of vid in seconds
+        console.log(videoDuration);
+    }
+}
+async function handlePlay(event) {
+    if (event.target.play) {
+        await chrome.runtime.sendMessage({ value: "play-metro", target: "offscreen" });
+    }
+    else {
+        await chrome.runtime.sendMessage({ value: "pause-metro", target: "offscreen" });
+    }
+}
+function resetVideo() {
+    if (video) {
+        video.removeEventListener("canplaythrough", handleCanPlayThrough);
+    }
+}
 function prepareVideo() {
     if (videoPrepped)
         return;
     video = document.querySelector(".html5-main-video");
     const options = { once: true };
-    video.addEventListener("canplaythrough", (event) => {
-        if (video) {
-            video.pause();
-            videoPrepped = true;
-            videoDuration = video.duration; //duration of vid in seconds
-            console.log(videoDuration);
-        }
-    }, options);
+    video.addEventListener("canplaythrough", handleCanPlayThrough, options);
+    video.addEventListener("play", handlePlay, options);
 }
 //send message to SW to create offscreen document to ensure audio is ready
 function prepareOffscreenAudio() {
@@ -49,7 +66,8 @@ let enableKita = true;
 //everytime document.body gets mutated query the video element exists/changed
 //if it exists reset existing videos and prepare video and audio to play
 const observer = new MutationObserver((mutations) => {
-    if (enableKita && document.querySelector(".html5-main-video")) {
+    resetVideo();
+    if (enableKita && document.querySelector(".html5-main-video") != null) {
         if (!videoPrepped) {
             prepareVideo();
         }
@@ -57,24 +75,27 @@ const observer = new MutationObserver((mutations) => {
             prepareOffscreenAudio();
         }
     }
-    else if (document.querySelector(".html5-main-video") == null) {
-        videoPrepped = false;
+    else {
+        console.log("stop");
         audioPrepped = false;
+        chrome.runtime.sendMessage({ value: "pause-metro", target: "offscreen" });
     }
 });
 const config = { childList: true, subtree: true };
 observer.observe(document.body, config);
 //document eventlisteners for spacebar press to start and stop video and metronome
-document.addEventListener("keydown", (event) => {
-    console.log(videoPrepped, Boolean(video), audioPrepped);
-    if (videoPrepped && video && audioPrepped) {
-        video.play();
-        chrome.runtime.sendMessage({ value: "play-metro", target: "offscreen" });
+let playMetAndVid = false;
+document.addEventListener("keydown", async (event) => {
+    event.preventDefault();
+    playMetAndVid = !playMetAndVid;
+    console.log(playMetAndVid, videoPrepped, Boolean(video), audioPrepped);
+    if (playMetAndVid && videoPrepped && video && audioPrepped) {
+        console.log("all true");
+        await chrome.runtime.sendMessage({ value: "play-metro", target: "offscreen" });
         console.log("playing");
     }
-    else if (!video || (video && video.paused == false)) { //if already playing or lost connection to video need to pause video
-        video === null || video === void 0 ? void 0 : video.pause();
-        chrome.runtime.sendMessage({ value: "pause-metro", target: "offscreen" });
+    else {
+        await chrome.runtime.sendMessage({ value: "pause-metro", target: "offscreen" });
         console.log("paused");
     }
 });

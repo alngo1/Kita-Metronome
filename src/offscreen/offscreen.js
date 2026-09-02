@@ -1,3 +1,4 @@
+"use strict";
 //handles messages: "play-metro" and "pause-metro"
 function handleMessages(message) {
     if (message.target !== "offscreen") {
